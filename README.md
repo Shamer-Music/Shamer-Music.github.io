@@ -3,7 +3,7 @@
 A simple personal website for my music project **Shamer**.
 
 ## Live site
-- https://YOURUSERNAME.github.io/
+- https://Shamer-Music.github.io/
 
 ## What’s inside
 - `index.html` — page structure/content
