@@ -147,6 +147,7 @@ class OBJECT_OT_dominant_axis_clean(Operator):
             original_matrix = obj.matrix_world.copy()
             original_location, _original_rotation, original_scale = original_matrix.decompose()
 
+            # Keep the clean-basis path (not rotation_difference) to remove residual tilt/twist noise.
             original_forward = get_forward_world_vector(obj, props.forward_axis)
             target_axis = nearest_world_axis(original_forward)
             clean_rotation_matrix = build_clean_rotation_matrix(obj, props.forward_axis, target_axis)
