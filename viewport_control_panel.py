@@ -81,6 +81,29 @@ def apply_slow_zoom_mode(scene, context):
             scene.vcp_slow_zoom_cached = False
 
 
+def restore_slow_zoom_mode_preferences():
+    """Restore global input preferences if any scene left slow zoom mode active."""
+    context = bpy.context
+    if context is None:
+        return
+
+    zoom_owner, zoom_attr = get_pref_with_fallback(context, ["zoom_to_mouse_position", "use_zoom_to_mouse"], owner="inputs")
+    depth_owner, depth_attr = get_pref_with_fallback(context, ["use_auto_depth", "use_mouse_depth_navigate"], owner="inputs")
+
+    for scene in bpy.data.scenes:
+        if not getattr(scene, "vcp_slow_zoom_cached", False):
+            continue
+
+        if zoom_owner and zoom_attr:
+            setattr(zoom_owner, zoom_attr, bool(scene.vcp_prev_zoom_to_mouse))
+        if depth_owner and depth_attr:
+            setattr(depth_owner, depth_attr, bool(scene.vcp_prev_auto_depth))
+
+        scene.vcp_slow_zoom_cached = False
+        scene.vcp_slow_zoom_mode = False
+        break
+
+
 # -----------------------------------------------------------------------------
 # View operators driven by Scene multipliers
 # -----------------------------------------------------------------------------
@@ -460,6 +483,8 @@ def register():
 
 
 def unregister():
+    restore_slow_zoom_mode_preferences()
+
     del bpy.types.Scene.vcp_slow_zoom_mode
     del bpy.types.Scene.vcp_slow_zoom_cached
     del bpy.types.Scene.vcp_prev_auto_depth
